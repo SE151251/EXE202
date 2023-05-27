@@ -17,7 +17,7 @@ function Item({item})
       backgroundRepeat: 'no-repeat',
       backgroundPosition: 'center',
       backgroundImage: `url(${item.image})`,
-      height:{lg:"500px",xs:"30%"}
+      height:{lg:"400px",xs:"30%"}
     }}
   >
     {/* Increase the priority of the hero background image */}

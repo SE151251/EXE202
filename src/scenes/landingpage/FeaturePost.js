@@ -11,7 +11,7 @@ const featuredPosts = [
     date: 'Nov 12',
     description:
       'This is a wider card with supporting text below as a natural lead-in to additional content.',
-    image: 'https://source.unsplash.com/random?wallpapers',
+    image: 'https://www.chuphinhsanpham.vn/wp-content/uploads/2016/04/chup-hinh-mon-an-dep-c-photo-0002.jpg',
     imageLabel: 'Image Text',
   },
   {
@@ -19,7 +19,7 @@ const featuredPosts = [
     date: 'Nov 11',
     description:
       'This is a wider card with supporting text below as a natural lead-in to additional content.',
-    image: 'https://source.unsplash.com/random?wallpapers',
+    image: 'https://cdn.tgdd.vn/Files/2019/03/07/1153472/chinese-new-year_600x800.jpg',
     imageLabel: 'Image Text',
   },
 ];

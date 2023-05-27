@@ -262,7 +262,7 @@ const CreateArticle = () => {
             )}
           </FieldArray>
 
-          <Button fullWidth type="submit" variant="contained" sx={{mt:5}} >Post</Button>
+          <Button fullWidth type="submit" variant="contained" sx={{mt:5, mb: 5}} >Post</Button>
         </Form>
       )}
     </Formik>
