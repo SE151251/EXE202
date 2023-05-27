@@ -40,10 +40,9 @@ export default function Login({ setIsLogin }) {
   };
 
   return (
-    <div style={{ width:"99vw", height:"77vh", paddingTop:"20vh", backgroundImage: 'url("./images/BackgroundLogin.png")', backgroundSize: "cover" }} 
-    // sx={{backgroundImage: 'url("./images/back")'}}
+    <div style={{ width:"100vw", height:"80vh", paddingTop:"20vh", backgroundImage: 'url("./images/BackgroundLogin.png")', backgroundSize: "cover" }} 
     >
-     <Container component="main" maxWidth="xs" sx={{backgroundColor:"rgba(255, 255, 255, 0.8)", p:5}}>
+     <Container component="main" maxWidth="xs" sx={{backgroundColor:"rgba(255, 255, 255, 0.5)", p:5}}>
       <Box
         sx={{
           // m: 8,
