@@ -26,9 +26,11 @@ const Topbar = ({setIsSidebar,setIsLogin}) => {
     setAnchorEl(null);
   };
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("isLogin");
     setAnchorEl(null);
-    setIsLogin(null)
+    setIsLogin(false)
     navigate("/")
   }
   return (

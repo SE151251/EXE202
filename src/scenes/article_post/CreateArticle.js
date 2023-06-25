@@ -17,21 +17,7 @@ import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import FormData from "form-data";
-// const validationSchema = Yup.object().shape({
-//   // Định nghĩa các trường và các quy tắc xác thực tương ứng
-//   // Ví dụ:
-//   name: Yup.string().required("Please enter your name"),
-//   email: Yup.string()
-//     .email("Invalid email address")
-//     .required("Please enter your email address"),
-
-// });
-// const initialValues = {
-//   name: "",
-//   email: "",
-//   dynamicFields: [], // Mảng rỗng là giá trị mặc định
-//   dynamicFields2: [{ description: "", image: null }],
-// };
+import { toast } from "react-toastify";
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is required"),
   content: Yup.string().required("Content is required"),
@@ -126,13 +112,14 @@ const CreateArticle = () => {
             }
           }
           console.log(formData);
+          const access_token = localStorage.getItem('access_token');
           axios
             .post(
               "https://fresh-style.azurewebsites.net/odata/Recipes",
               formData,
               {
                 headers: {
-                  Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmc3R5bGV0ZWFtN0BnbWFpbC5jb20iLCJlbWFpbCI6ImZzdHlsZXRlYW03QGdtYWlsLmNvbSIsIlJvbGUiOiJBZG1pbiIsImp0aSI6IjE5ZjcwMjVlLThjOGQtNDRmNC04MjliLWU5YWJiNjAwNjVkNyIsImV4cCI6MTY4NzYyNTIxMSwiaXNzIjoiRlN0eWxlVGVhbSIsImF1ZCI6IkZTdHlsZUFjdG9ycyJ9.vMiCeUVz1UHwLWZFMP4RqPiPFwgRTjy7sCFxhXVdOWE`,
+                  Authorization: `Bearer ${access_token}`,
                   "Content-Type": "multipart/form-data",
                 },
               }
@@ -140,12 +127,15 @@ const CreateArticle = () => {
             .then((response) => {
               // Xử lý phản hồi từ API
               console.log(response.data);
+              toast.success("Create post successfully")
+              navigate("/posts")
             })
             .catch((error) => {
               // Xử lý lỗi nếu có
               console.error(error);
+              toast.error("Error in create post")
             });
-          //navigate("/posts")
+         
         }}
       >
         {({ values }) => (

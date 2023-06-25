@@ -1,10 +1,11 @@
 import { Navigate, Outlet } from "react-router-dom";
-const PrivateRoute = () => {
+const CheckLogin = () => {
   const acccessToken = localStorage.getItem("access_token");
   const refreshToken = localStorage.getItem("refresh_token");
-if (!acccessToken || !refreshToken) {
-     return <Navigate to="/" />;
+  const isLogin = localStorage.getItem("isLogin");
+if (acccessToken && refreshToken && isLogin) {
+     return <Navigate to="/dashboard" />;
    }
   return <Outlet />;
 };
-export default PrivateRoute;
+export default CheckLogin;
