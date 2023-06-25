@@ -1,19 +1,18 @@
-import React from "react";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import { Box, Typography } from "@mui/material";
-import { Button, TextField } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
-import Avatar from "@mui/material/Avatar";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Grid from "@mui/material/Grid";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { Box, Button, TextField, Typography } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Checkbox from "@mui/material/Checkbox";
 import Container from "@mui/material/Container";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import axios from "axios";
+import { useFormik } from "formik";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import * as Yup from "yup";
 export default function Login({ setIsLogin }) {
   const navigate = useNavigate();
+  const [loading, setIsLoading] = useState(false)
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -29,6 +28,7 @@ export default function Login({ setIsLogin }) {
         .max(20, "Password is too long, max 20 characters!"),
     }),
     onSubmit: (values) => {
+      setIsLoading(true)
       console.log(values);
       const dataLogin = {
         userName: values.username,
@@ -52,9 +52,10 @@ export default function Login({ setIsLogin }) {
           localStorage.setItem("isLogin", true);
           setIsLogin(true);
           toast.success("Login successful");
-          navigate("/dashboard");
+          navigate("/dashboard");      
         })
         .catch((error) => {
+          setIsLoading(false)
           if (error.response && error.response.data) {
             for (
               let i = 0;
@@ -71,7 +72,7 @@ export default function Login({ setIsLogin }) {
   });
 
   const checkDisabled = (password, username) => {
-    return password === "" || username === "";
+    return password === "" || username === "" || loading;
   };
 
   return (
@@ -155,6 +156,18 @@ export default function Login({ setIsLogin }) {
               >
                 Sign In
               </Button>
+              {/* <Grid container>
+                <Grid item xs>
+                  <Link to="/" variant="body2">
+                    Forgot password?
+                  </Link>
+                </Grid>
+                <Grid item>
+                  <Link to="/" variant="body2">
+                    {"Don't have an account? Sign Up"}
+                  </Link>
+                </Grid>
+              </Grid> */}
             </Box>
           </form>
         </Box>

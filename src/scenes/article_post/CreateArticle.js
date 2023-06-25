@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Field, FieldArray, Form } from "formik";
 import * as Yup from "yup";
 import {
@@ -14,16 +14,21 @@ import {
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import PermIdentityOutlinedIcon from "@mui/icons-material/PermIdentityOutlined";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import FormData from "form-data";
 import { toast } from "react-toastify";
+
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is required"),
   content: Yup.string().required("Content is required"),
   cookingTime: Yup.number("Time must be a number")
     .min(1, "Cooking Time must be greater than or equal to 1")
     .required("Cooking time is required"),
+  price: Yup.number("Price must be a number")
+    .min(0, "Price must be greater than or equal to 0")
+    .required("Price is required"),
   serves: Yup.number("Serves must be a number")
     .min(1, "Serves must be greater than or equal to 1")
     .required("Serves is required"),
@@ -37,6 +42,7 @@ const validationSchema = Yup.object({
 
 const CreateArticle = () => {
   const navigate = useNavigate();
+  const [loading, setIsLoading] = useState(false)
   return (
     <Container fixed>
       <Typography variant="h2" sx={{ mb: 5, textAlign: "center" }}>
@@ -49,25 +55,30 @@ const CreateArticle = () => {
           mainImage: null,
           cookingTime: 1,
           serves: 1,
+          price: 0,
           ingredients: [],
           steps: [{ description: "", image: null }],
         }}
         validationSchema={validationSchema}
         onSubmit={(values) => {
+          setIsLoading(true)
           // Xử lý submit form
           console.log("data submit: ", values);
           let listIngredients = [];
           let listInstructions = [];
-          let listInstructionImages = [];
           for (let i = 0; i < values.ingredients.length; i++) {
             listIngredients.push({
               step: i + 1,
               content: values.ingredients[i],
             });
           }
+          console.log(typeof(values.steps[0].image));       
           for (let i = 0; i < values.steps.length; i++) {
-            for (let z = 0; z < values.steps[0].image.length; z++) {
-              listInstructionImages.push(values.steps[0].image[z]);
+            var listInstructionImages = [];
+            for (let z = 0; z < values.steps[i].image.length; z++) {
+              console.log(values.steps[i].image.length);
+              console.log(values.steps[i].image[z].name);
+              listInstructionImages.push(values.steps[i].image[z]);
             }
             listInstructions.push({
               step: i + 1,
@@ -81,8 +92,8 @@ const CreateArticle = () => {
           formData.append("RecipeDescription", values.content);
           formData.append("CookTimes", values.cookingTime);
           formData.append("Serving", values.serves);
-          formData.append("IsFree", true);
-          formData.append("UnitsPrice", 0);
+          formData.append("IsFree", values.price === 0 ? true : false);
+          formData.append("UnitsPrice", values.price);
           formData.append("RecipeImages", values.mainImage);
           for (let i = 0; i < listIngredients.length; i++) {
             const item = listIngredients[i];
@@ -98,20 +109,21 @@ const CreateArticle = () => {
             for (const key in item) {
               if (item.hasOwnProperty(key)) {
                 const value = item[key];
-          
+                console.log("line 110 item[key]: ",value);
                 if (Array.isArray(value)) {
                   // Xử lý mảng các hình ảnh
                   for (let j = 0; j < value.length; j++) {
+                    console.log("line 114: ",value);
                     formData.append(`Instructions[${i}].${key}`, value[j]);
                   }
                 } else {
                   // Xử lý các giá trị không phải mảng
+                  console.log("line 119");
                   formData.append(`Instructions[${i}].${key}`, value);
                 }
               }
             }
           }
-          console.log(formData);
           const access_token = localStorage.getItem('access_token');
           axios
             .post(
@@ -132,8 +144,21 @@ const CreateArticle = () => {
             })
             .catch((error) => {
               // Xử lý lỗi nếu có
-              console.error(error);
-              toast.error("Error in create post")
+              console.error(error.response.data.Message.length);
+              if(error.response.data.Message){
+                setIsLoading(false)
+              for(let x = 0 ; x < error.response.data.Message.length; x++){
+                for(let i = 0; i < error.response.data.Message[x].DescriptionError.length; i++){
+                  toast.error(error.response.data.Message[x].DescriptionError[i])
+                }
+              }
+               
+              }
+              else{
+                setIsLoading(false)
+                toast.error("Error in create post")
+              }
+             
             });
          
         }}
@@ -219,13 +244,33 @@ const CreateArticle = () => {
                 {({ field, meta }) => (
                   <TextField
                     {...field}
-                    sx={{ mt: 5, mb: 4 }}
+                    sx={{ mt: 5, mb: 4 , mr: 10}}
                     label="Serves"
                     type="number"
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
                           <PermIdentityOutlinedIcon />
+                        </InputAdornment>
+                      ),
+                      // endAdornment: <InputAdornment position="end">peoples</InputAdornment>,
+                    }}
+                    error={meta.touched && !!meta.error}
+                    helperText={meta.touched && meta.error ? meta.error : ""}
+                  />
+                )}
+              </Field>
+              <Field name="price">
+                {({ field, meta }) => (
+                  <TextField
+                    {...field}
+                    sx={{ mt: 5, mb: 4 }}
+                    label="Price"
+                    type="number"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <AttachMoneyIcon />
                         </InputAdornment>
                       ),
                       // endAdornment: <InputAdornment position="end">peoples</InputAdornment>,
@@ -372,6 +417,7 @@ const CreateArticle = () => {
               type="submit"
               variant="contained"
               sx={{ mt: 5, mb: 5 }}
+              disabled={loading}
             >
               Post
             </Button>
