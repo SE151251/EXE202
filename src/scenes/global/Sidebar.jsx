@@ -107,7 +107,7 @@ const Sidebar = () => {
                   Thái Quốc Toàn
                 </Typography>
                 <Typography variant="h5" color={colors.greenAccent[500]}>
-                  Cóc kim cương
+                  Leader Fstyle Team
                 </Typography>
               </Box>
             </Box>

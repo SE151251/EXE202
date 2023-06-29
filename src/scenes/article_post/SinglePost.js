@@ -2,7 +2,7 @@ import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import PermIdentityOutlinedIcon from '@mui/icons-material/PermIdentityOutlined';
-import { Chip, Divider, Stack } from "@mui/material";
+import {Box, Chip, Divider, Stack } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
@@ -11,6 +11,9 @@ import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
+import axiosClient from "../../utils/axiosCustomize";
+import { toast } from "react-toastify";
 import { styled } from "@mui/material/styles";
 import * as React from "react";
 const ExpandMore = styled((props) => {
@@ -29,6 +32,24 @@ export default function SinglePost({data}) {
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
+  const handleDetelePost = async (id) => {
+    console.log(id);
+    const confirmed = window.confirm("Are you sure you want to delete this Article?");
+    if (confirmed) {
+      try {
+        const data = await axiosClient.delete(`/Recipes/${id}`)
+        console.log(data);
+        const newList = listData.filter((d)=> d.RecipeID !== id)
+        console.log("data old:", listData);
+        console.log("removed: ",newList);
+        setData(newList)    
+        toast.success("Delete successful")
+      } catch (error) {
+        toast.error("Delete failed!")
+      }
+    }
+   
+  };
   return (
     <>
     <Card sx={{ maxWidth: "50vw", m: "auto", mb: 5 }}>
@@ -39,7 +60,10 @@ export default function SinglePost({data}) {
         alt="alt name"
       />
       <CardContent>
-        <Typography variant="h2">{data.RecipeTitle}</Typography>
+      <Box sx={{display:"flex", justifyContent:"space-between", alignItems:"center"}}>
+          <Typography variant="h2">{data.RecipeTitle}</Typography>
+          <span style={{cursor:"pointer"}} onClick={() => handleDetelePost(data.RecipeID)}><DeleteForeverOutlinedIcon color="error"/></span>
+          </Box>  
         <Divider sx={{mt:2, mb:2}}/>
         <Typography variant="h6" color="text.secondary">
           {data.RecipeDescription}
@@ -60,11 +84,12 @@ export default function SinglePost({data}) {
           label={`Interactions - ${data.Interacts}`}
           sx={{ backgroundColor: "#B7FF71", mt: 3,  ml: 3, fontSize: 15 }}
         ></Chip>
-         <Chip
-          icon={<AttachMoneyIcon />}
-          label={`Price - ${data.UnitsPrice}`}
-          sx={{ backgroundColor: "#B7FF71", mt: 3,  ml: 3, fontSize: 15 }}
-        ></Chip>
+       <Box> <Chip
+            icon={<AttachMoneyIcon />}
+            color="info"
+            label={`Price - ${data.UnitsPrice === null ? 0 : data.UnitsPrice}`}
+            sx={{ mt: 3, fontSize: 15 }}
+          ></Chip></Box>
       </CardContent>
       <CardActions disableSpacing>
         <Typography sx={{color:"blueviolet"}}>Read more...</Typography>

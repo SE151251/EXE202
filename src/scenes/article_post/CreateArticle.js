@@ -56,7 +56,7 @@ const CreateArticle = () => {
           cookingTime: 1,
           serves: 1,
           price: 0,
-          ingredients: [],
+          ingredients: [""],
           steps: [{ description: "", image: null }],
         }}
         validationSchema={validationSchema}
