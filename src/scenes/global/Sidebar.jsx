@@ -4,6 +4,7 @@ import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
+import LibraryBooksOutlinedIcon from '@mui/icons-material/LibraryBooksOutlined';
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { useState } from "react";
 import { Menu, MenuItem, ProSidebar } from "react-pro-sidebar";
@@ -136,9 +137,16 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             /> */}
-            <Item
+             <Item
               title="List Orders"
-              to="/contacts"
+              to="/orders"
+              icon={<LibraryBooksOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+             <Item
+              title="List Members"
+              to="/members"
               icon={<ContactsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
