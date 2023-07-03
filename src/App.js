@@ -11,6 +11,7 @@ import PrivateRoute from "./scenes/login/PrivateRoute";
 import Contacts from "./scenes/contacts";
 import { ColorModeContext, useMode } from "./theme";
 import CheckLogin from "./scenes/login/CheckLogin";
+import UpdateArticle from "./scenes/article_post/UpdateArticle";
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
