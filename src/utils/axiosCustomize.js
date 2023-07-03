@@ -37,12 +37,12 @@ axiosClient.interceptors.response.use(
             refreshToken: localStorage.getItem("refresh_token")
           },
         });
-
+        console.log("regenerated token: ", newData);
         // Lưu newAccessToken vào Local Storage hoặc trình quản lý trạng thái
-        localStorage.setItem("access_token", newData.AccessToken);
-
+        localStorage.setItem("access_token", newData.data.accessToken);
+        localStorage.setItem("refresh_token", newData.data.refreshToken);
         // Thực hiện lại yêu cầu gốc với access token đã làm mới
-        error.config.headers.Authorization = `Bearer ${newData.AccessToken}`;
+        error.config.headers.Authorization = `Bearer ${newData.data.accessToken}`;
         const response = await axios.request(error.config);
         return response;
       } catch (refreshError) {

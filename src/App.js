@@ -34,6 +34,7 @@ function App() {
                 {/* <Route path="/team" element={<Team />} /> */}
                 <Route path="/posts" element={<Article />} />
                 <Route path="/createpost" element={<CreateArticle />} />
+                <Route path="/updatepost/:id" element={<UpdateArticle />} />
                 <Route path="/contacts" element={<Contacts />} />
                {/*  <Route path="/invoices" element={<Invoices />} />
                 <Route path="/form" element={<Form />} />
