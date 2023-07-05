@@ -14,15 +14,17 @@ import {
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import PermIdentityOutlinedIcon from "@mui/icons-material/PermIdentityOutlined";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+// import axios from "axios";
 import FormData from "form-data";
 import { toast } from "react-toastify";
+import axiosClient from "../../utils/axiosCustomize";
 
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is required"),
   content: Yup.string().required("Content is required"),
+  mainImage: Yup.mixed().required("Recipe main image is required"),
   cookingTime: Yup.number("Time must be a number")
     .min(1, "Cooking Time must be greater than or equal to 1")
     .required("Cooking time is required"),
@@ -36,13 +38,14 @@ const validationSchema = Yup.object({
   steps: Yup.array().of(
     Yup.object().shape({
       description: Yup.string().required("Description is required"),
+      image: Yup.mixed().required('Image of step is required'),
     })
   ),
 });
 
 const CreateArticle = () => {
   const navigate = useNavigate();
-  const [loading, setIsLoading] = useState(false)
+  const [loading, setIsLoading] = useState(false);
   return (
     <Container fixed>
       <Typography variant="h2" sx={{ mb: 5, textAlign: "center" }}>
@@ -60,8 +63,8 @@ const CreateArticle = () => {
           steps: [{ description: "", image: null }],
         }}
         validationSchema={validationSchema}
-        onSubmit={(values) => {
-          setIsLoading(true)
+        onSubmit={async (values) => {
+          setIsLoading(true);
           // Xử lý submit form
           console.log("data submit: ", values);
           let listIngredients = [];
@@ -72,12 +75,10 @@ const CreateArticle = () => {
               content: values.ingredients[i],
             });
           }
-          console.log(typeof(values.steps[0].image));       
+          //
           for (let i = 0; i < values.steps.length; i++) {
             var listInstructionImages = [];
             for (let z = 0; z < values.steps[i].image.length; z++) {
-              console.log(values.steps[i].image.length);
-              console.log(values.steps[i].image[z].name);
               listInstructionImages.push(values.steps[i].image[z]);
             }
             listInstructions.push({
@@ -86,7 +87,6 @@ const CreateArticle = () => {
               InstructionImages: listInstructionImages,
             });
           }
-          console.log(listInstructions);
           const formData = new FormData();
           formData.append("RecipeTitle", values.title);
           formData.append("RecipeDescription", values.content);
@@ -105,62 +105,50 @@ const CreateArticle = () => {
             }
           }
           for (let i = 0; i < listInstructions.length; i++) {
-            const item = listInstructions[i];          
+            const item = listInstructions[i];
             for (const key in item) {
               if (item.hasOwnProperty(key)) {
                 const value = item[key];
-                console.log("line 110 item[key]: ",value);
                 if (Array.isArray(value)) {
                   // Xử lý mảng các hình ảnh
                   for (let j = 0; j < value.length; j++) {
-                    console.log("line 114: ",value);
                     formData.append(`Instructions[${i}].${key}`, value[j]);
                   }
                 } else {
                   // Xử lý các giá trị không phải mảng
-                  console.log("line 119");
                   formData.append(`Instructions[${i}].${key}`, value);
                 }
               }
             }
           }
-          const access_token = localStorage.getItem('access_token');
-          axios
-            .post(
-              "https://fresh-style.azurewebsites.net/odata/Recipes",
-              formData,
-              {
-                headers: {
-                  Authorization: `Bearer ${access_token}`,
-                  "Content-Type": "multipart/form-data",
-                },
-              }
-            )
-            .then((response) => {
-              // Xử lý phản hồi từ API
-              console.log(response.data);
-              toast.success("Create post successfully")
-              navigate("/posts")
-            })
-            .catch((error) => {
-              // Xử lý lỗi nếu có
-              console.error(error.response.data.Message.length);
-              if(error.response.data.Message){
-                setIsLoading(false)
-              for(let x = 0 ; x < error.response.data.Message.length; x++){
-                for(let i = 0; i < error.response.data.Message[x].DescriptionError.length; i++){
-                  toast.error(error.response.data.Message[x].DescriptionError[i])
+          try {
+            const data = await axiosClient.post("/Recipes", formData, {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            });
+            setIsLoading(false);
+            toast.success("Create post successfully");
+            navigate("/posts");
+          } catch (error) {
+            if (error.response.data.Message) {
+              setIsLoading(false);
+              for (let x = 0; x < error.response.data.Message.length; x++) {
+                for (
+                  let i = 0;
+                  i < error.response.data.Message[x].DescriptionError.length;
+                  i++
+                ) {
+                  toast.error(
+                    error.response.data.Message[x].DescriptionError[i]
+                  );
                 }
               }
-               
-              }
-              else{
-                setIsLoading(false)
-                toast.error("Error in create post")
-              }
-             
-            });
-         
+            } else {
+              setIsLoading(false);
+              toast.error("Error in create post");
+            }
+          }
         }}
       >
         {({ values }) => (
@@ -212,7 +200,7 @@ const CreateArticle = () => {
                         )
                       }
                     />
-                    {meta.touched && meta.error && <div>{meta.error}</div>}
+                    {meta.touched && meta.error && <div style={{color: "red"}}>{meta.error}</div>}
                   </>
                 )}
               </Field>
@@ -244,7 +232,7 @@ const CreateArticle = () => {
                 {({ field, meta }) => (
                   <TextField
                     {...field}
-                    sx={{ mt: 5, mb: 4 , mr: 10}}
+                    sx={{ mt: 5, mb: 4, mr: 10 }}
                     label="Serves"
                     type="number"
                     InputProps={{
@@ -290,12 +278,6 @@ const CreateArticle = () => {
                 <div>
                   {values.ingredients.map((ingredient, index) => (
                     <div key={index}>
-                      {/* <Field
-                      name={`ingredients[${index}]`}
-                      as={TextField}
-                      label="Ingredients"
-
-                    /> */}
                       <Field name={`ingredients[${index}]`}>
                         {({ field, meta }) => (
                           <TextField
@@ -339,13 +321,8 @@ const CreateArticle = () => {
             <FieldArray name="steps">
               {({ push, remove }) => (
                 <div>
-                  {values.steps.map((phoneNumber, index) => (
+                  {values.steps.map((st, index) => (
                     <div key={index}>
-                      {/* <Field
-                      name={`steps.${index}.description`}
-                      as={TextField}
-                      label="Description"
-                    /> */}
                       <Field name={`steps.${index}.description`}>
                         {({ field, meta }) => (
                           <TextField
@@ -384,7 +361,7 @@ const CreateArticle = () => {
                                 }
                               />
                               {meta.touched && meta.error && (
-                                <div>{meta.error}</div>
+                                <div style={{color: "red"}}>{meta.error}</div>
                               )}
                             </>
                           )}
@@ -404,7 +381,7 @@ const CreateArticle = () => {
                   <Button
                     type="button"
                     variant="contained"
-                    onClick={() => push("")}
+                    onClick={() => push({ description: "", image: null })}
                   >
                     More step
                   </Button>

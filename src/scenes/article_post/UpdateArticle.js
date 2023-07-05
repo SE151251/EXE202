@@ -409,7 +409,7 @@ const UpdateArticle = () => {
                   <Button
                     type="button"
                     variant="contained"
-                    onClick={() => push("")}
+                    onClick={() => push({ description: "", image: null })}
                   >
                     More step
                   </Button>
