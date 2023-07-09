@@ -1,25 +1,65 @@
+import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
+import { tokens } from "../../theme";
+import { mockTransactions } from "../../data/mockData";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import EmailIcon from "@mui/icons-material/Email";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import TrafficIcon from "@mui/icons-material/Traffic";
-import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
 import Header from "../../components/Header";
+import LineChart from "../../components/LineChart";
+import GeographyChart from "../../components/GeographyChart";
+import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
-import { mockTransactions } from "../../data/mockData";
-import { tokens } from "../../theme";
-import Apex from "../../components/ApexChart"
+import ProgressCircle from "../../components/ProgressCircle";
+import AddCardIcon from "@mui/icons-material/AddCard";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import PersonPinIcon from "@mui/icons-material/PersonPin";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import Apex from "../../components/ApexChart";
+import { useEffect, useState } from "react";
+import axiosClient from "../../utils/axiosCustomize";
+import { FoodBankOutlined } from "@mui/icons-material";
 const Dashboard = () => {
+  const [data, setData] = useState({
+    CurrentMonthProfits: 0,
+    TotalActiveRecipes: 0,
+    TotalActiveStyleFers: 0,
+    TotalOrders: 0,
+    TotalRecipeTypes: 0,
+    MonthProfits: [
+      {
+        month: 0,
+        profit: 0,
+      },
+    ],
+    FiveNewOrders: [],
+  });
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosClient.get(
+          "/Dashboards?$expand=monthProfits,fiveNewOrders",
+          { params: { year: 2023 } }
+        );
+        setData(response);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+  console.log(typeof(data.MonthProfits));
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
   return (
-    <Box m="20px" sx={{height:"100vh"}}>
+    <Box m="20px" sx={{ height: "100vh" }}>
       {/* HEADER */}
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="DASHBOARD" subtitle="Welcome to your dashboard" />
 
-        <Box>
+        {/* <Box>
           <Button
             sx={{
               backgroundColor: colors.blueAccent[700],
@@ -32,7 +72,7 @@ const Dashboard = () => {
             <DownloadOutlinedIcon sx={{ mr: "10px" }} />
             Download Reports
           </Button>
-        </Box>
+        </Box> */}
       </Box>
 
       {/* GRID & CHARTS */}
@@ -51,12 +91,12 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="12,361"
-            subtitle="Emails Sent"
-            progress="0.75"
-            increase="+14%"
+            title={data.TotalActiveRecipes}
+            subtitle="Recipes Active"
+            progress="0.3"
+            increase="+30%"
             icon={
-              <EmailIcon
+              <MenuBookIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
               />
             }
@@ -70,12 +110,12 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="431,225"
-            subtitle="Sales Obtained"
+            title={data.TotalActiveStyleFers}
+            subtitle="StyleFers Active"
             progress="0.50"
             increase="+21%"
             icon={
-              <PointOfSaleIcon
+              <PersonPinIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
               />
             }
@@ -89,12 +129,12 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="32,441"
-            subtitle="New Clients"
+            title={data.TotalOrders}
+            subtitle="Total Orders"
             progress="0.30"
             increase="+5%"
             icon={
-              <PersonAddIcon
+              <AddCardIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
               />
             }
@@ -108,12 +148,12 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="1,325,134"
-            subtitle="Traffic Received"
+            title={data.TotalRecipeTypes}
+            subtitle="Recipe Types"
             progress="0.80"
             increase="+43%"
             icon={
-              <TrafficIcon
+              <FoodBankOutlined
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
               />
             }
@@ -125,6 +165,7 @@ const Dashboard = () => {
           gridColumn="span 8"
           gridRow="span 2"
           backgroundColor={colors.primary[400]}
+          sx={{height:"65vh"}}
         >
           <Box
             mt="25px"
@@ -146,19 +187,19 @@ const Dashboard = () => {
                 fontWeight="bold"
                 color={colors.greenAccent[500]}
               >
-                $59,342.32
+                ${data.CurrentMonthProfits}
               </Typography>
             </Box>
-            <Box>
+            {/* <Box>
               <IconButton>
                 <DownloadOutlinedIcon
                   sx={{ fontSize: "26px", color: colors.greenAccent[500] }}
                 />
               </IconButton>
-            </Box>
+            </Box> */}
           </Box>
-          <Box height="250px" m="-20px 0 0 0">
-            <Apex />
+          <Box height="300px" m="-20px 0 0 0">
+            <Apex dataChart = {data.MonthProfits}/>
           </Box>
         </Box>
         <Box
@@ -166,6 +207,7 @@ const Dashboard = () => {
           gridRow="span 2"
           backgroundColor={colors.primary[400]}
           overflow="auto"
+          sx={{height:"65vh"}}
         >
           <Box
             display="flex"
@@ -238,8 +280,8 @@ const Dashboard = () => {
             </Typography>
             <Typography>Includes extra misc expenditures and costs</Typography>
           </Box>
-        </Box>
-        <Box
+        </Box> */}
+        {/* <Box
           gridColumn="span 4"
           gridRow="span 2"
           backgroundColor={colors.primary[400]}
@@ -254,8 +296,8 @@ const Dashboard = () => {
           <Box height="250px" mt="-20px">
             <BarChart isDashboard={true} />
           </Box>
-        </Box>
-        <Box
+        </Box> */}
+        {/* <Box
           gridColumn="span 4"
           gridRow="span 2"
           backgroundColor={colors.primary[400]}

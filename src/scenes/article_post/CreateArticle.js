@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, Field, FieldArray, Form } from "formik";
 import * as Yup from "yup";
 import {
@@ -7,6 +7,10 @@ import {
   Container,
   Divider,
   InputAdornment,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
   Stack,
   TextField,
   Typography,
@@ -38,7 +42,7 @@ const validationSchema = Yup.object({
   steps: Yup.array().of(
     Yup.object().shape({
       description: Yup.string().required("Description is required"),
-      image: Yup.mixed().required('Image of step is required'),
+      image: Yup.mixed().required("Image of step is required"),
     })
   ),
 });
@@ -46,6 +50,26 @@ const validationSchema = Yup.object({
 const CreateArticle = () => {
   const navigate = useNavigate();
   const [loading, setIsLoading] = useState(false);
+  const [data, setData] = useState(["Type 1", "Type 2"]);
+  const [selectedType, setSelectedType] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosClient.get("/RecipeTypes");
+        if (response.value) {
+          setData(response.value.map((t) => ({ Id: t.Id, Name: t.Name })));
+          if (response.value.length > 0) {
+            setSelectedType(response.value[0].Id);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+  console.log(data);
   return (
     <Container fixed>
       <Typography variant="h2" sx={{ mb: 5, textAlign: "center" }}>
@@ -65,6 +89,7 @@ const CreateArticle = () => {
         validationSchema={validationSchema}
         onSubmit={async (values) => {
           setIsLoading(true);
+          console.log(selectedType);
           // Xử lý submit form
           console.log("data submit: ", values);
           let listIngredients = [];
@@ -95,6 +120,7 @@ const CreateArticle = () => {
           formData.append("IsFree", values.price === 0 ? true : false);
           formData.append("UnitsPrice", values.price);
           formData.append("RecipeImages", values.mainImage);
+          formData.append("RecipeTypeId", selectedType);
           for (let i = 0; i < listIngredients.length; i++) {
             const item = listIngredients[i];
             for (const key in item) {
@@ -200,7 +226,9 @@ const CreateArticle = () => {
                         )
                       }
                     />
-                    {meta.touched && meta.error && <div style={{color: "red"}}>{meta.error}</div>}
+                    {meta.touched && meta.error && (
+                      <div style={{ color: "red" }}>{meta.error}</div>
+                    )}
                   </>
                 )}
               </Field>
@@ -267,8 +295,24 @@ const CreateArticle = () => {
                     helperText={meta.touched && meta.error ? meta.error : ""}
                   />
                 )}
-              </Field>
+              </Field>            
             </Stack>
+            <Box  sx={{ mt: 1, mb: 4 }}>
+                <InputLabel htmlFor="recipeType">Recipe Type</InputLabel>
+                <Select
+                  id="recipeType"
+                  // label="Recipe Type"
+                  value={selectedType}
+                  onChange={(e) => setSelectedType(e.target.value)}
+                  sx={{ width: "15vw" }}
+                >
+                  {data.map((item) => (
+                    <MenuItem key={item.Id} value={item.Id}>
+                      {item.Name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Box>
             <Divider />
             <Typography variant="h4" sx={{ mt: 2 }}>
               Ingredients
@@ -361,7 +405,7 @@ const CreateArticle = () => {
                                 }
                               />
                               {meta.touched && meta.error && (
-                                <div style={{color: "red"}}>{meta.error}</div>
+                                <div style={{ color: "red" }}>{meta.error}</div>
                               )}
                             </>
                           )}
@@ -381,7 +425,7 @@ const CreateArticle = () => {
                   <Button
                     type="button"
                     variant="contained"
-                    onClick={() => push({ description: "", image: null })}
+                    onClick={() => push({description: "", image: null })}
                   >
                     More step
                   </Button>

@@ -1,19 +1,17 @@
 import React from 'react';
 import ReactApexChart from 'react-apexcharts';
 
-const Apex = () => {
+const Apex = ({dataChart}) => {
+  let dataNumber = [1, 2, 3, 4, 5, 10, 12, 9, 8, 10, 7, 6]
+  if(dataChart){
+   const check = dataChart.some((element) => element > 0);
+   if(check) {dataNumber = dataChart.map((n) => n.Profit)}
+  }
+  
   const series = [
     {
       name: 'Net Profit',
-      data: [44, 55, 57, 56, 61, 58, 63, 60, 66]
-    },
-    {
-      name: 'Revenue',
-      data: [76, 85, 101, 98, 87, 105, 91, 114, 94]
-    },
-    {
-      name: 'Free Cash Flow',
-      data: [35, 41, 36, 26, 45, 48, 52, 53, 41]
+      data: dataNumber
     }
   ];
 
@@ -25,7 +23,7 @@ const Apex = () => {
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: '55%',
+        columnWidth: '45%',
         endingShape: 'rounded'
       }
     },
@@ -34,16 +32,16 @@ const Apex = () => {
     },
     stroke: {
       show: true,
-      width: 2,
+      width: 1,
       colors: ['transparent']
     },
     xaxis: {
-      categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct']
+      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     },
     yaxis: {
-      title: {
-        text: '$ (thousands)'
-      }
+      // title: {
+      //   text: '$ (thousands)'
+      // }
     },
     fill: {
       opacity: 1
@@ -59,7 +57,7 @@ const Apex = () => {
 
   return (
     <div id="chart">
-      <ReactApexChart options={options} series={series} type="bar" height={240} />
+      <ReactApexChart options={options} series={series} type="bar" height={400} />
     </div>
   );
 };

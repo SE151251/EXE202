@@ -13,6 +13,7 @@ import { ColorModeContext, useMode } from "./theme";
 import CheckLogin from "./scenes/login/CheckLogin";
 import UpdateArticle from "./scenes/article_post/UpdateArticle";
 import ListMembers from "./scenes/ListMember/ListMember";
+import ListRecipeType from "./scenes/RecipeType/ListRecipeType";
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
@@ -39,6 +40,7 @@ function App() {
                 <Route path="/updatepost/:id" element={<UpdateArticle />} />
                 <Route path="/orders" element={<Contacts />} />
                 <Route path="/members" element={<ListMembers />} />
+                <Route path="/recipetype" element={<ListRecipeType />} />
                {/*  <Route path="/invoices" element={<Invoices />} />
                 <Route path="/form" element={<Form />} />
                 <Route path="/bar" element={<Bar />} />

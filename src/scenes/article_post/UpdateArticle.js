@@ -8,6 +8,9 @@ import {
   Container,
   Divider,
   InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
   Stack,
   TextField,
   Typography,
@@ -47,17 +50,29 @@ const UpdateArticle = () => {
   const { id } = useParams();
   const [loading, setIsLoading] = useState(false);
   const [initValue, setInitValue] = useState();
+  const [dataRecipeType, setRecipeType] = useState();
+  const [selectedType, setSelectedType] = useState("");
   const loadData = async () => {
-    const data = await axiosClient.get(`/Recipes/${id}`)
+    const data = await axiosClient.get(`/Recipes/${id}?expand=instructions`)
+    const listRecipeTypeFetch = await axiosClient.get("/RecipeTypes");
     console.log(data);
+    console.log(listRecipeTypeFetch);
     setInitValue(data)
+    setRecipeType(listRecipeTypeFetch.value.map((t) => ({ Id: t.Id, Name: t.Name })));
+      if (listRecipeTypeFetch.value.length > 0) {
+        for(let i = 0; i < listRecipeTypeFetch.value.length; i++){
+          if(listRecipeTypeFetch.value[i].Name === data.RecipeType){
+            setSelectedType(listRecipeTypeFetch.value[i].Id);
+          }
+        }      
+      }   
   }
   useEffect(() => {
     loadData()
   }, []);
   if(initValue){
   let listIngredientsLoad = initValue.Ingredients.map((i)=> i.Content)
-  let listInstructionsLoad = initValue.Instructions.map((i)=> ({description: i.Content, image: null, imageFetch: i.InstructionImages}))
+  let listInstructionsLoad = initValue.Instructions.map((i)=> ({id:i.Id ,description: i.Content, image: null, imageFetch: i.InstructionImages}))
   console.log(listInstructionsLoad);
   return (
     <Container fixed>
@@ -99,11 +114,13 @@ const UpdateArticle = () => {
               }
             }          
             listInstructions.push({
+              Id: values.steps[i].id,
               step: i + 1,
               content: values.steps[i].description,
               InstructionImages: listInstructionImages,
             });
           }
+          console.log("list instructions: ", listInstructions);
           const formData = new FormData();
           formData.append("RecipeTitle", values.title);
           formData.append("RecipeDescription", values.content);
@@ -112,6 +129,7 @@ const UpdateArticle = () => {
           formData.append("IsFree", values.price === 0 ? true : false);
           formData.append("UnitsPrice", values.price);
           formData.append("RecipeImages", values.mainImage);
+          formData.append("RecipeTypeId", selectedType);
           for (let i = 0; i < listIngredients.length; i++) {
             const item = listIngredients[i];
             for (const key in item) {
@@ -291,6 +309,22 @@ const UpdateArticle = () => {
                 )}
               </Field>
             </Stack>
+            <Box  sx={{ mt: 1, mb: 4 }}>
+                <InputLabel htmlFor="recipeType">Recipe Type</InputLabel>
+                <Select
+                  id="recipeType"
+                  // label="Recipe Type"
+                  value={selectedType}
+                  onChange={(e) => setSelectedType(e.target.value)}
+                  sx={{ width: "15vw" }}
+                >
+                  {dataRecipeType.map((item) => (
+                    <MenuItem key={item.Id} value={item.Id}>
+                      {item.Name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Box>
             <Divider />
             <Typography variant="h4" sx={{ mt: 2 }}>
               Ingredients
@@ -360,6 +394,11 @@ const UpdateArticle = () => {
                           />
                         )}
                       </Field>
+                      <Box sx={{display:"none"}}>
+                      <Field name={`steps.${index}.id`}>                   
+                      </Field>
+                      </Box>
+                      
 
                       <Box sx={{ mt: 3 }}>
                         <label
@@ -389,12 +428,13 @@ const UpdateArticle = () => {
                           )}
                         </Field>
                       </Box>
+                      <Stack direction="row" spacing={3} sx={{mt:2}}>
                       {dataInstructions.imageFetch.map((i) =>
                       ( <Box>
                         <img style={{width:"15vw", height:"25vh", objectFit:"cover"}} src={i.Source} />
                         </Box>)
                       )}
-             
+                     </Stack>
                       <Button
                         startIcon={<DeleteForeverOutlinedIcon />}
                         type="button"
@@ -409,7 +449,7 @@ const UpdateArticle = () => {
                   <Button
                     type="button"
                     variant="contained"
-                    onClick={() => push({ description: "", image: null })}
+                    onClick={() => push({id: null, description: "", image: null })}
                   >
                     More step
                   </Button>

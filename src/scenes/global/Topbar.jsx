@@ -56,12 +56,12 @@ const Topbar = ({setIsSidebar,setIsLogin}) => {
             <LightModeOutlinedIcon />
           )}
         </IconButton>
-        <IconButton>
+        {/* <IconButton>
           <NotificationsOutlinedIcon />
         </IconButton>
         <IconButton>
           <SettingsOutlinedIcon />
-        </IconButton>
+        </IconButton> */}
         <IconButton onClick={handleClick}>
           <PersonOutlinedIcon  />
         </IconButton>
