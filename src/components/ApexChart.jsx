@@ -2,12 +2,14 @@ import React from 'react';
 import ReactApexChart from 'react-apexcharts';
 
 const Apex = ({dataChart}) => {
-  let dataNumber = [1, 2, 3, 4, 5, 10, 12, 9, 8, 10, 7, 6]
+  var dataNumber = [1, 2, 3, 4, 5, 10, 12, 9, 8, 10, 7, 6]
   if(dataChart){
-   const check = dataChart.some((element) => element > 0);
-   if(check) {dataNumber = dataChart.map((n) => n.Profit)}
+  dataChart.sort((a, b) => a.Month - b.Month);
+  const check = dataChart.some((element) => element.Profit > 0);
+  if(check) {
+    dataNumber = dataChart.map((n) => n.Profit) 
   }
-  
+  }
   const series = [
     {
       name: 'Net Profit',
