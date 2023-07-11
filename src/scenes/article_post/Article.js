@@ -8,7 +8,7 @@ export default function RecipeReviewCard() {
   const accessToken = localStorage.getItem("access_token");
   const fetchData = async () => {
     try {
-      const response = await axiosClient.get("/Recipes?$expand=instructions");
+      const response = await axiosClient.get("/Recipes?$expand=instructions($expand=instructionimages),Ingredients,RecipeImages");
       if(response.value){
       setData(response.value.filter((d) => d.Status !== 0) || []);
       }

@@ -53,7 +53,7 @@ const UpdateArticle = () => {
   const [dataRecipeType, setRecipeType] = useState();
   const [selectedType, setSelectedType] = useState("");
   const loadData = async () => {
-    const data = await axiosClient.get(`/Recipes/${id}?expand=instructions`)
+    const data = await axiosClient.get(`/Recipes/${id}?$expand=instructions($expand=instructionimages),Ingredients,RecipeImages`)
     const listRecipeTypeFetch = await axiosClient.get("/RecipeTypes");
     console.log(data);
     console.log(listRecipeTypeFetch);
