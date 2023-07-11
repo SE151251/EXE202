@@ -449,7 +449,7 @@ const UpdateArticle = () => {
                   <Button
                     type="button"
                     variant="contained"
-                    onClick={() => push({id: null, description: "", image: null })}
+                    onClick={() => push({id: null, description: "", imageFetch : [] })}
                   >
                     More step
                   </Button>
