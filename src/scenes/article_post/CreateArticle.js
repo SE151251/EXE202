@@ -20,7 +20,8 @@ import PermIdentityOutlinedIcon from "@mui/icons-material/PermIdentityOutlined";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import { useNavigate } from "react-router-dom";
-// import axios from "axios";
+import { useTheme } from "@mui/material";
+import { tokens } from "../../theme";
 import FormData from "form-data";
 import { toast } from "react-toastify";
 import axiosClient from "../../utils/axiosCustomize";
@@ -52,7 +53,8 @@ const CreateArticle = () => {
   const [loading, setIsLoading] = useState(false);
   const [data, setData] = useState(["Type 1", "Type 2"]);
   const [selectedType, setSelectedType] = useState("");
-
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -73,7 +75,7 @@ const CreateArticle = () => {
   return (
     <Container fixed>
       <Typography variant="h2" sx={{ mb: 5, textAlign: "center" }}>
-        CREATE A NEW POST
+      ꧁༺CREATE A NEW POST༻꧂
       </Typography>
       <Formik
         initialValues={{
@@ -322,13 +324,14 @@ const CreateArticle = () => {
                 <div>
                   {values.ingredients.map((ingredient, index) => (
                     <div key={index}>
+                      <Typography sx={{mt:2}}>Ingredient {index + 1}</Typography>
                       <Field name={`ingredients[${index}]`}>
                         {({ field, meta }) => (
                           <TextField
                             {...field}
-                            sx={{ mt: 5 }}
+                            sx={{ mt: 2 }}
                             size="small"
-                            label="Ingredients"
+                            label="Ingredient"
                             error={meta.touched && !!meta.error}
                             helperText={
                               meta.touched && meta.error ? meta.error : ""
@@ -341,7 +344,11 @@ const CreateArticle = () => {
                         type="button"
                         variant="outlined"
                         onClick={() => remove(index)}
-                        sx={{ mt: 5, ml: 5 }}
+                        sx={{backgroundColor: `${colors.redAccent[800]}`, mt: 2, ml: 5,
+                        ":hover": {
+                          bgcolor: `${colors.redAccent[700]}`,
+                          color: "white"
+                        } }}
                       >
                         Remove ingredient
                       </Button>
@@ -351,7 +358,10 @@ const CreateArticle = () => {
                     variant="contained"
                     type="button"
                     onClick={() => push("")}
-                    sx={{ mt: 3, mb: 5 }}
+                    sx={{backgroundColor: `${colors.greenAccent[600]}`, mt: 3, mb: 5, ":hover": {
+                      bgcolor: `${colors.greenAccent[400]}`,
+                      color: "white"
+                    } }}
                   >
                     More ingredient
                   </Button>
@@ -367,6 +377,7 @@ const CreateArticle = () => {
                 <div>
                   {values.steps.map((st, index) => (
                     <div key={index}>
+                      <Typography sx={{mb: 1}}>Step {index + 1} </Typography>
                       <Field name={`steps.${index}.description`}>
                         {({ field, meta }) => (
                           <TextField
@@ -416,7 +427,12 @@ const CreateArticle = () => {
                         type="button"
                         variant="outlined"
                         onClick={() => remove(index)}
-                        sx={{ mt: 2, mb: 5 }}
+                        sx={{backgroundColor: `${colors.redAccent[800]}`, mt: 2, mb: 5,
+                        ":hover": {
+                          bgcolor: `${colors.redAccent[700]}`,
+                          color: "white"
+                        } }}
+
                       >
                         Remove step
                       </Button>
@@ -424,8 +440,13 @@ const CreateArticle = () => {
                   ))}
                   <Button
                     type="button"
-                    variant="contained"
-                    onClick={() => push({description: "", image: null })}
+                    variant="contained"              
+                    onClick={() => push({ description: "", image: null })}
+                    sx={{backgroundColor: `${colors.greenAccent[600]}`,
+                    ":hover": {
+                      bgcolor: `${colors.greenAccent[400]}`,
+                      color: "white"
+                    }}}
                   >
                     More step
                   </Button>
@@ -437,8 +458,11 @@ const CreateArticle = () => {
               fullWidth
               type="submit"
               variant="contained"
-              sx={{ mt: 5, mb: 5 }}
-              disabled={loading}
+              sx={{backgroundColor: `${colors.greenAccent[600]}`, mt: 5, mb: 5,":hover": {
+                bgcolor: `${colors.greenAccent[400]}`,
+                color: "white"
+              } }}
+              disabled={loading}          
             >
               Post
             </Button>

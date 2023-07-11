@@ -95,7 +95,7 @@ export default function SinglePost({data, listData, setData}) {
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
       >
-        <MoreHorizIcon/>
+        <MoreHorizIcon color="info"/>
       </Button>
       <Menu
         id="basic-menu"
@@ -144,15 +144,16 @@ export default function SinglePost({data, listData, setData}) {
             sx={{ backgroundColor: colors.greenAccent[800], mt: 3,  ml: 3, fontSize: 15 }}
           ></Chip>
            <Box> <Chip
-            icon={<AttachMoneyIcon />}            
-            label={`Price:  ${data.UnitsPrice === null ? 0 : data.UnitsPrice}$`}
-            sx={{ backgroundColor: colors.redAccent[700], mt: 3, fontSize: 15 }}
-          ></Chip></Box>
-           <Box> <Chip
             icon={<FoodBankOutlinedIcon />}          
             label={`Recipe Type: ${data.RecipeType}`}
             sx={{ backgroundColor: colors.blueAccent[800], mt: 3, fontSize: 15 }}
           ></Chip></Box>
+           <Box> <Chip
+            icon={<AttachMoneyIcon />}            
+            label={`Price:  ${data.UnitsPrice === null ? 0 : data.UnitsPrice}$`}
+            sx={{ backgroundColor: colors.redAccent[700], mt: 3, fontSize: 15 }}
+          ></Chip></Box>
+          
         </CardContent>
         <CardActions disableSpacing>
           <Typography sx={{color:"blueviolet"}}>{expanded ? "Read less..." : "Read more..."}</Typography>
