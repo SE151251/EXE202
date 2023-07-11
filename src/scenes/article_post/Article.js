@@ -5,7 +5,6 @@ import { Box, CircularProgress} from "@mui/material";
 
 export default function RecipeReviewCard() {
   const [data, setData] = React.useState(null);
-  const accessToken = localStorage.getItem("access_token");
   const fetchData = async () => {
     try {
       const response = await axiosClient.get("/Recipes?$expand=instructions($expand=instructionimages),Ingredients,RecipeImages");
@@ -23,7 +22,7 @@ export default function RecipeReviewCard() {
   };
   React.useEffect(() => {
     fetchData();
-  }, [accessToken]);
+  }, []);
   if (data) {
     return (
       <>

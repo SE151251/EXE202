@@ -29,6 +29,7 @@ const Dashboard = () => {
         OrderStatus: 0,
         OrderedDate: "2023-07-10T06:39:06.9812813Z",
         Total: 0.63,
+        StyleFer: { Email: "email@gmail.com", FullName: "user" }
       },
     ],
   });
@@ -36,7 +37,7 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const response = await axiosClient.get(
-          "/Dashboards?$expand=monthProfits,fiveNewOrders",
+          "/Dashboards?$expand=monthProfits,fiveNewOrders($expand=stylefer)",
           { params: { year: 2023 } }
         );
         setData(response);
@@ -235,9 +236,17 @@ const Dashboard = () => {
                 >
                   Order ID: {transaction.ID}
                 </Typography>
-                <Typography color={colors.grey[100]}>
-                  {transaction.OrderStatus === 0 ? "Failed" : "Success"}
-                </Typography>
+                <Typography 
+                   color={colors.blueAccent[500]}
+                   variant="h5"
+                   fontWeight="400"
+                  >
+                    {transaction.StyleFer.Email}
+                  </Typography>
+
+                  <Typography color={colors.grey[100]}>
+                   {transaction.OrderStatus === 0 ? "Failed" : "Success"}
+                  </Typography>
               </Box>
               <Box color={colors.grey[100]}>{format(new Date(transaction.OrderedDate), 'dd/MM/yyyy')}</Box>
               <Box

@@ -15,13 +15,13 @@ import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { styled } from "@mui/material/styles";
-import FoodBankOutlinedIcon from '@mui/icons-material/FoodBankOutlined';
 import * as React from "react";
+import FoodBankOutlinedIcon from '@mui/icons-material/FoodBankOutlined';
 import axiosClient from "../../utils/axiosCustomize";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-// import { useTheme } from "@mui/material";
-// import { tokens } from "../../theme";
+import { useTheme } from "@mui/material";
+import { tokens } from "../../theme";
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
   return <IconButton {...other} />;
@@ -34,8 +34,8 @@ const ExpandMore = styled((props) => {
 }));
 
 export default function SinglePost({data, listData, setData}) {
-  // const theme = useTheme();
-  // const colors = tokens(theme.palette.mode);
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
   const [expanded, setExpanded] = React.useState(false);
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -130,34 +130,32 @@ export default function SinglePost({data, listData, setData}) {
           <Chip
             icon={<AccessTimeOutlinedIcon />}
             label={`Cook time - ${data.CookTimes} mins`}
-            sx={{ backgroundColor: "#B7FF71", mt: 3, fontSize: 15 }}
+            sx={{ backgroundColor: colors.greenAccent[800], mt: 3, fontSize: 15 }}
           ></Chip>
           <Chip
             icon={<PermIdentityOutlinedIcon />}
             label={`Serves - ${data.Serving}`}
             variant="outlined"
-            sx={{ backgroundColor: "#B7FF71", ml: 3, mt: 3, fontSize: 15 }}
+            sx={{ backgroundColor: colors.greenAccent[800], ml: 3, mt: 3, fontSize: 15 }}
           />
           <Chip
             icon={<FavoriteBorderIcon />}
             label={`Interactions - ${data.Interacts}`}
-            sx={{ backgroundColor: "#B7FF71", mt: 3,  ml: 3, fontSize: 15 }}
+            sx={{ backgroundColor: colors.greenAccent[800], mt: 3,  ml: 3, fontSize: 15 }}
           ></Chip>
            <Box> <Chip
-            icon={<AttachMoneyIcon />}
-            color="info"
-            label={`Price - ${data.UnitsPrice === null ? 0 : data.UnitsPrice}`}
-            sx={{ mt: 3, fontSize: 15 }}
+            icon={<AttachMoneyIcon />}            
+            label={`Price:  ${data.UnitsPrice === null ? 0 : data.UnitsPrice}$`}
+            sx={{ backgroundColor: colors.redAccent[700], mt: 3, fontSize: 15 }}
           ></Chip></Box>
-            <Box> <Chip
-            icon={<FoodBankOutlinedIcon />}
-            color="warning"
+           <Box> <Chip
+            icon={<FoodBankOutlinedIcon />}          
             label={`Recipe Type: ${data.RecipeType}`}
-            sx={{ mt: 3, fontSize: 15 }}
+            sx={{ backgroundColor: colors.blueAccent[800], mt: 3, fontSize: 15 }}
           ></Chip></Box>
         </CardContent>
         <CardActions disableSpacing>
-          <Typography sx={{color:"blueviolet"}}>Read more...</Typography>
+          <Typography sx={{color:"blueviolet"}}>{expanded ? "Read less..." : "Read more..."}</Typography>
           <ExpandMore
             expand={expanded}
             onClick={handleExpandClick}
@@ -175,7 +173,7 @@ export default function SinglePost({data, listData, setData}) {
               {" "}
               <span
                 style={{
-                  backgroundColor: "#B7FF71",
+                  backgroundColor: colors.greenAccent[800],
                   height: "24px",
                   width: "24px",
                   borderRadius: "50%",
@@ -193,10 +191,9 @@ export default function SinglePost({data, listData, setData}) {
           </CardContent>
           <Divider />
           <CardContent>
-          <Typography variant="h4">Instructions:</Typography>
             {data.Instructions.map((s)=>(
               <>
-               
+               <Typography variant="h4">Instructions:</Typography>
             <Typography paragraph sx={{mt:3}}>
               <strong>Step {s.Step}: </strong> {s.Content}
             </Typography>
