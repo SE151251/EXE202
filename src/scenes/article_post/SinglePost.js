@@ -148,7 +148,12 @@ export default function SinglePost({data, listData, setData}) {
             label={`Price - ${data.UnitsPrice === null ? 0 : data.UnitsPrice}`}
             sx={{ mt: 3, fontSize: 15 }}
           ></Chip></Box>
-          
+            <Box> <Chip
+            icon={<FoodBankOutlinedIcon />}
+            color="warning"
+            label={`Recipe Type: ${data.RecipeType}`}
+            sx={{ mt: 3, fontSize: 15 }}
+          ></Chip></Box>
         </CardContent>
         <CardActions disableSpacing>
           <Typography sx={{color:"blueviolet"}}>Read more...</Typography>
@@ -187,9 +192,10 @@ export default function SinglePost({data, listData, setData}) {
           </CardContent>
           <Divider />
           <CardContent>
+          <Typography variant="h4">Instructions:</Typography>
             {data.Instructions.map((s)=>(
               <>
-               <Typography variant="h4">Instructions:</Typography>
+               
             <Typography paragraph sx={{mt:3}}>
               <strong>Step {s.Step}: </strong> {s.Content}
             </Typography>
