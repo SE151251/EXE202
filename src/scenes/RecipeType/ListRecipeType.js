@@ -1,4 +1,4 @@
-import { Box, Button } from "@mui/material";
+import { Box, Button, IconButton } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
@@ -7,7 +7,8 @@ import { useEffect, useState } from "react";
 import axiosClient from "../../utils/axiosCustomize";
 import { format } from "date-fns";
 import CreateRecipeTypePopup from "./CreateRecipeTypePopup";
-import "react-toastify/dist/ReactToastify.css";
+import UpdateRecipeTypePopup from "./UpdateRecipeTypePopup";
+import EditIcon from "@mui/icons-material/Edit";
 
 const ListRecipeType = () => {
   const theme = useTheme();
@@ -17,19 +18,33 @@ const ListRecipeType = () => {
     { field: "id", headerName: "Recipe Type ID", flex: 0.5 },
     { field: "Name", headerName: "Name", flex: 0.5 },
     { field: "ModifiedDate", headerName: "Modified Date", flex: 0.5 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      flex: 0.5,
+      renderCell: (params) => (
+        <IconButton
+          onClick={() => handleOpenUpdateDialog(params.row)}
+          aria-label="Update"
+        >
+          <EditIcon />
+        </IconButton>
+      ),
+    },
   ];
 
   const [recipeTypes, setRecipeTypes] = useState([]);
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
+  const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+  const [selectedRecipeType, setSelectedRecipeType] = useState(null);
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     const fetchRecipeTypes = async () => {
       try {
         setLoading(true);
         const response = await axiosClient.get("/RecipeTypes");
         const data = response.value;
-        console.log("response: ", data);
+        console.log("Recipe Type: ", data)
         const rows =
           data && data.length
             ? data.map((recipeType) => ({
@@ -70,6 +85,36 @@ const ListRecipeType = () => {
     } finally {
       setLoading(false);
       handleCloseCreateDialog();
+    }
+  };
+
+  const handleOpenUpdateDialog = (recipeType) => {
+    setSelectedRecipeType(recipeType);
+    setOpenUpdateDialog(true);
+  };
+
+  const handleCloseUpdateDialog = () => {
+    setOpenUpdateDialog(false);
+  };
+
+  const handleUpdateRecipeType = async (updatedRecipeType) => {
+    setLoading(true);
+
+    try {
+      setRecipeTypes((prevRecipeTypes) => {
+        const updatedTypes = prevRecipeTypes.map((recipeType) => {
+          if (recipeType.id === updatedRecipeType.id) {
+            return updatedRecipeType;
+          }
+          return recipeType;
+        });
+        return updatedTypes;
+      });
+    } catch (error) {
+      console.error("Error updating recipe type:", error);
+    } finally {
+      setLoading(false);
+      handleCloseUpdateDialog();
     }
   };
 
@@ -136,9 +181,16 @@ const ListRecipeType = () => {
         onClose={handleCloseCreateDialog}
         onCreate={handleCreateRecipeType}
         loading={loading}
-        setRecipeTypes = {setRecipeTypes}
+        setRecipeTypes={setRecipeTypes}
       />
-      {/* <ToastContainer /> */}
+      <UpdateRecipeTypePopup
+        open={openUpdateDialog}
+        onClose={handleCloseUpdateDialog}
+        onUpdate={handleUpdateRecipeType}
+        loading={loading}
+        recipeType={selectedRecipeType}
+        setRecipeTypes={setRecipeTypes}
+      />
     </Box>
   );
 };

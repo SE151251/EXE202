@@ -30,8 +30,7 @@ const CreateRecipeTypeForm = ({
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      });
-
+      });    
       toast.success("Recipe Type created successfully.");
 
       setSubmitting(false);
@@ -105,7 +104,7 @@ const CreateRecipeTypeForm = ({
             type="submit"
             fullWidth={true}
             variant="contained"
-            color="primary"
+            color="success"
             disabled={isSubmitting || loading}
           >
             Create

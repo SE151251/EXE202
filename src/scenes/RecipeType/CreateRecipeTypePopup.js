@@ -37,7 +37,7 @@ const CreateRecipeTypePopup = ({ open, onClose, onCreate, loading, setRecipeType
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
+        <Button onClick={handleClose} variant="contained" color="error">Cancel</Button>
       </DialogActions>
     </Dialog>
   );
