@@ -3,10 +3,11 @@ import { Box } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
-import OrderDetailsPopup from "./Dialog/OrderDetailsPopup";
+import OrderConfirmationPopup from "./Dialog/OrderConfirmationPopup"; // Thêm import OrderConfirmationPopup
 import { useTheme } from "@mui/material";
 import axiosClient from "../../utils/axiosCustomize";
 import { format } from "date-fns";
+import EditIcon from "@mui/icons-material/Edit"; // Thêm import EditIcon
 
 const Contacts = () => {
   const theme = useTheme();
@@ -17,62 +18,43 @@ const Contacts = () => {
     {
       field: "Email",
       headerName: "Email",
-      flex: 0.5
+      flex: 0.5,
     },
-    { field: "OrderedDate", headerName: "Ordered Date", flex: 0.5},
+    { field: "OrderedDate", headerName: "Ordered Date", flex: 0.5 },
     {
       field: "Total",
       headerName: "Total",
-      flex: 0.5
+      flex: 0.5,
     },
     {
       field: "OrderStatus",
       headerName: "Order Status",
-      flex: 0.5
-    },
-   
-    // {
-    //   field: "styleFer",
-    //   headerName: "StyleFer",
-    //   flex: 1,
-    //   renderCell: (params) => (
-    //     <span
-    //       className="link"
-    //       onClick={() => handleOpenContactDetails(params.row.styleFer)}
-    //     >
-    //       View
-    //     </span>
-    //   ),
-    // },
-    {
-      field: "OrderDetail",
-      headerName: "Order Detail",
       flex: 0.5,
-      renderCell: (params) => (
-        <span
-          className="link"
-          onClick={() => handleOpenOrderDetails(params.row.id)}
-          style={{cursor: 'pointer'}}
-        >
-          View
-        </span>
-      ),
     },
-    // {
-    //   field: "orderTransactions",
-    //   headerName: "Order Transactions",
-    //   flex: 1,
-    //   renderCell: (params) => (
-    //     <span
-    //       className="link"
-    //       onClick={() =>
-    //         handleOpenOrderTransactions(params.row.orderTransactions)
-    //       }
-    //     >
-    //       View
-    //     </span>
-    //   ),
-    // },
+    {
+      field: "Actions", 
+      headerName: "Actions",
+      flex: 0.5,
+      renderCell: (params) => {
+        const isUnPaid = params.row.OrderStatus === "UnPaid";
+        return (
+          <>
+            {isUnPaid ? (
+              <EditIcon
+                className="link"
+                onClick={() => handleOpenOrderConfirmation(params.row.id)}
+                style={{ cursor: "pointer" }}
+              />
+            ) : (
+              <EditIcon
+                className="link"
+                style={{ color: "gray", cursor: "not-allowed" }}
+              />
+            )}
+          </>
+        );
+      },
+    },
   ];
 
   const [orderd, setOrderd] = useState([]);
@@ -84,14 +66,18 @@ const Contacts = () => {
         const response = await axiosClient.get(`/Orders?$expand=styleFer`);
         const data = response.value;
         console.log("Data: ", data);
-        const rows = data && data.length ? data.map((orderd) => ({
-          id: orderd.ID,
-          Email: orderd.StyleFer.Email,
-          OrderedDate: format(new Date(orderd.OrderedDate), 'dd/MM/yyyy'),
-          Total: orderd.Total,
-          OrderStatus: orderd.OrderStatus === 1 ? "Success" : "Failed",
-          OrderDetail: orderd.OrderDetails, 
-        })) : [];
+        const rows =
+          data && data.length
+            ? data.map((orderd) => ({
+                id: orderd.ID,
+                Email: orderd.StyleFer.Email,
+                OrderedDate: format(new Date(orderd.OrderedDate), "dd/MM/yyyy"),
+                Total: orderd.Total,
+                OrderStatus: orderd.OrderStatus === 1 ? "Paid" : "UnPaid",
+                OrderDetail: orderd.OrderDetails,
+                total: orderd.Total,
+              }))
+            : [];
 
         setOrderd(rows);
       } catch (error) {
@@ -101,21 +87,20 @@ const Contacts = () => {
 
     fetchOrderd();
   }, []);
-
-  const handleOpenOrderDetails = (orderId) => {
+  const [initialAmount, setInitialAmount] = useState(0);
+  const handleOpenOrderConfirmation = (orderId) => {
+    const order = orderd.find((order) => order.id === orderId);
     setSelectedOrderId(orderId);
+    setInitialAmount(order?.total || 0);
   };
 
-  const handleCloseOrderDetails = () => {
+  const handleCloseOrderConfirmation = () => {
     setSelectedOrderId(null);
   };
 
   return (
     <Box m="20px">
-      <Header
-        title="CONTACTS"
-        subtitle="List of Contacts for Future Reference"
-      />
+      <Header title="CONTACTS" subtitle="List of Contacts for Future Reference" />
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -155,14 +140,15 @@ const Contacts = () => {
         />
       </Box>
       {selectedOrderId && (
-        <OrderDetailsPopup
-          orderId={selectedOrderId}
-          onClose={handleCloseOrderDetails}
-        />
+        <OrderConfirmationPopup
+        orderId={selectedOrderId}
+        initialAmount={initialAmount}
+        onClose={handleCloseOrderConfirmation}
+        setOrderd={setOrderd}
+      />
       )}
     </Box>
   );
 };
 
 export default Contacts;
-

@@ -47,14 +47,11 @@ axiosClient.interceptors.response.use(
         return response;
       } catch (refreshError) {
         // Xử lý lỗi khi làm mới access token
-        console.log("error: ", refreshError);
-        if(refreshError.message === "Request failed with status code 404"){
           localStorage.clear()
           localStorage.removeItem("access_token")
           localStorage.removeItem("refresh_token")
           localStorage.removeItem("isLogin")
           window.location.href = "/";         
-        }
         return Promise.reject(refreshError);
       }
     }
